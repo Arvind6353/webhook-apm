@@ -42,7 +42,9 @@ app.post("/webhook-apm", function(req,res,next){
 
   if(body && body.resource && body.resource.payment_id)
     firebase.database().ref('/webhookAPM').child(body.resource.payment_id).set(body);
-  console.log("stored ")
+  console.log("stored ");
+
+  res.end();
 
 })
 
