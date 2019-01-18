@@ -40,7 +40,7 @@ app.post("/webhook-apm", function(req,res,next){
   var body = req.body;
   body.date = new Date();
 
-  firebase.database().ref('/webhookAPM').child("payloads").push({[body.id]: body});
+  firebase.database().ref('/webhookAPM').child(body.id).set(body);
   console.log("stored ")
 
 })
