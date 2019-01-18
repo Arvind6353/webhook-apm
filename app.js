@@ -21,13 +21,20 @@ app.get('/', function (req, res) {
   
   console.log("HTTP Get Request");
 	var webhookRef = firebase.database().ref("/webhookAPM");
-
+  var arr = [];
 	//Attach an asynchronous callback to read the data
-	webhookRef.on("value", 
+	webhookRef.orderByChild('create_time').on("value", 
 			  function(snapshot) {
-					res.json(snapshot.val());
+          snapshot.forEach((child) => {
+              arr.push(child.val());
+          });          
+          var finalArr=  arr.slice().sort(function(a, b) {
+              return (new Date(a.create_time) - new Date(b.create_time))*-1; 
+          });
+
+					res.json(finalArr);
 					webhookRef.off("value");
-					}, 
+				}, 
 			  function (errorObject) {
 					console.log("The read failed: " + errorObject.code);
 					res.send("The read failed: " + errorObject.code);
@@ -38,7 +45,7 @@ app.post("/webhook-apm", function(req,res,next){
   console.log("incoming webhook at "+ new Date());
 
   var body = req.body;
-  body.date = new Date();
+  body.web_date = new Date();
 
   if(body && body.resource && body.resource.payment_id)
     firebase.database().ref('/webhookAPM').child(body.resource.payment_id).set(body);
